@@ -1,5 +1,3 @@
 # QLendCronJob
 
-## It is a task scheduler.
-
-## Using Python
+## It is a task scheduler written by Python
