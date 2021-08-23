@@ -2,7 +2,7 @@ import pymssql
 
 conn = pymssql.connect(
     server = '34.97.221.65',
-    # post = '11433',
+    port = '11433',
     user= 'sa',
     password='Abcd1234_@#Abcd1234_@#',
     database='QLendDB'
