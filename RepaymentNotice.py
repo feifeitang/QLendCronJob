@@ -8,9 +8,33 @@ conn = pymssql.connect(
     database='QLendDB'
 )
 
-cursor = conn.cursor()
-cursor.execute('SELECT * FROM [QLendDB].[dbo].[RepaymentRecord] WHERE DATEDIFF(day, GETDATE(), RepaymentDate) = 7;')
-row = cursor.fetchone()
-while row:
-    print (str(row[0]) + " " + str(row[1]) + " " + str(row[2]))
-    row = cursor.fetchone()
+RepaymentRecord_cursor = conn.cursor()
+Notice_cursor = conn.cursor()
+
+# expire in 7 days
+RepaymentRecord_cursor.execute('SELECT * FROM [QLendDB].[dbo].[ForeignWorker] WHERE DATEDIFF(day, \'2000-06-25\', BirthDate) = 0;')
+RepaymentRecord_row = RepaymentRecord_cursor.fetchone()
+while RepaymentRecord_row:
+    print (str(RepaymentRecord_row[0]) + " " + str(RepaymentRecord_row[1]))
+    RepaymentRecord_row = RepaymentRecord_cursor.fetchone()
+    Notice_cursor.execute('SELECT COUNT(*)+1 FROM [QLendDB].[dbo].[Notice];')
+    Notice_row = Notice_cursor.fetchone()
+    print (str(Notice_row[0]))
+
+# expire in 3 days
+RepaymentRecord_cursor.execute('SELECT * FROM [QLendDB].[dbo].[RepaymentRecord] WHERE DATEDIFF(day, GETDATE(), RepaymentDate) = 3;')
+RepaymentRecord_row = RepaymentRecord_cursor.fetchone()
+while RepaymentRecord_row:
+    print (str(RepaymentRecord_row[0]) + " " + str(RepaymentRecord_row[1]))
+    RepaymentRecord_row = RepaymentRecord_cursor.fetchone()
+
+# expire in 1 days
+RepaymentRecord_cursor.execute('SELECT * FROM [QLendDB].[dbo].[RepaymentRecord] WHERE DATEDIFF(day, GETDATE(), RepaymentDate) = 1;')
+RepaymentRecord_row = RepaymentRecord_cursor.fetchone()
+while RepaymentRecord_row:
+    print (str(RepaymentRecord_row[0]) + " " + str(RepaymentRecord_row[1]))
+    RepaymentRecord_row = RepaymentRecord_cursor.fetchone()
+
+RepaymentRecord_cursor.close()
+Notice_cursor.close()
+conn.close()
