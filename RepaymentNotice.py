@@ -20,7 +20,7 @@ while RepaymentRecord_row:
 
     # Notice_cursor.execute('SELECT COUNT(*)+1 FROM [QLendDB].[dbo].[Notice];')
     # Notice_row = Notice_cursor.fetchone()
-    # print(type(Notice_row))
+    # print (type(Notice_row))
     # print (str(Notice_row[0]))
 
     Notice_cursor.execute('INSERT INTO [QLendDB].[dbo].[Notice] (Content, Status, Link, CreateTime, ForeignWorkerId) VALUES (\'Your #Loan n repayment will expired in 7 days.\', 0, \'RepaymentPage or RepaymentDetailPage\', GETDATE(), 1036);')
