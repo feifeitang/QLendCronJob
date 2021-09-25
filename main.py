@@ -1,15 +1,13 @@
 import time
 import RepaymentNotice
 
-def setInterval(func, sec, param):
-    func(param)
+def setInterval(func, sec):
+    func()
     time.sleep(sec)
-    setInterval(func, sec, param)
+    setInterval(func, sec)
 
 try:
-    setInterval(RepaymentNotice.start, 86400, 7)
-    setInterval(RepaymentNotice.start, 86400, 3)
-    setInterval(RepaymentNotice.start, 86400, 1)
+    setInterval(RepaymentNotice.start, 86400)
 except Exception as e:
     print('main error', e)
 

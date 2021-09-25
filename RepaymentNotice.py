@@ -58,21 +58,20 @@ def insertNotice(content, foreignWorkerId):
         'INSERT INTO [QLendDB].[dbo].[Notice] (Content, Status, Link, CreateTime, ForeignWorkerId) VALUES (\'{0}\', 0, \'RepaymentDetailPage\', GETDATE(), {1});'
         .format(content, foreignWorkerId))
 
-
 def startByDay(day):
     try:
         repaymentRecords = getRepaymentRecordsByDate(conn, day)
-        print('get repaymentRecords', repaymentRecords)
         print('expire in %s days:' % day)
-        for repaymentRecord in repaymentRecords:
-            print(type (repaymentRecord[0]))
-            repaymentNumber = str(repaymentRecord[0])
-            loanNumber = str(repaymentRecord[1])
-            print('repaymentNumber: ' + repaymentNumber + 'loanNumber: ' +
-                  loanNumber)
+        print('have %s repaymentRecords' % len(repaymentRecords))
+        for index, repaymentRecord in enumerate(repaymentRecords):
+            if len(repaymentRecords) > 1 and index != 0:
+                print('-----next record-----')
+            repaymentNumber = repaymentRecord[0]
+            loanNumber = repaymentRecord[1]
 
             foreignWorkerId = getLoanRecordByLoanNumber(loanNumber)
-            print('foreignWorkerId: ', foreignWorkerId)
+
+            print('foreignWorkerId: {0}\nrepaymentNumber: {1}\nloanNumber: {2}'.format(foreignWorkerId, repaymentNumber, loanNumber))
 
             content = buildNoticeContent(day)
 
@@ -88,15 +87,22 @@ def startByDay(day):
                 "silent": False
             }
 
-            print('data', data)
-
             res = requests.post(url=requestUrl, headers=header, json=data)
             print('response code: ', res.status_code)
 
             conn.commit()
+            print()
 
         print("finish", str(datetime.now()))
 
     except Exception as e:
         print("errro msg", e)
         conn.close()
+
+def start():
+    startByDay(7)
+    print('-------------------------------------------')
+    startByDay(3)
+    print('-------------------------------------------')
+    startByDay(1)
+    print('-------------------------------------------')
