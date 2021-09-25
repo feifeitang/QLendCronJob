@@ -59,79 +59,22 @@ def insertNotice(content, foreignWorkerId):
         .format(content, foreignWorkerId))
 
 
-def start():
+def startByDay(day):
     try:
-        RepaymentRecord_cursor = conn.cursor()
-        LoanRecord_cursor = conn.cursor()
-        Notice_cursor = conn.cursor()
-        ForeignWorker_cursor = conn.cursor()
-
-        # expire in 7 days
-        RepaymentRecord_cursor.execute(
-            'SELECT RepaymentNumber, LoanNumber FROM [QLendDB].[dbo].[RepaymentRecord] WHERE DATEDIFF(day, GETDATE(), RepaymentDate) = 7;'
-        )
-        repaymentRecords = RepaymentRecord_cursor.fetchone()
-        print('expire in 7 days:')
-        while repaymentRecords:
-            repaymentNumber = str(repaymentRecords[0])
-            loanNumber = str(repaymentRecords[1])
-            print('repaymentNumber: ' + repaymentNumber + 'loanNumber: ' +
-                  loanNumber)
-
-            LoanRecord_cursor.execute(
-                'SELECT ID FROM [QLendDB].[dbo].[LoanRecord] WHERE LoanNumber = \'{0}\';'
-                .format(loanNumber))
-
-            foreignWorkerId = getLoanRecordByLoanNumber(loanNumber)
-            print('foreignWorkerId: ', foreignWorkerId)
-
-            content = 'Your repayment will expired in 7 days.'
-            Notice_cursor.execute(
-                'INSERT INTO [QLendDB].[dbo].[Notice] (Content, Status, Link, CreateTime, ForeignWorkerId) VALUES (\'{0}\', 0, \'RepaymentDetailPage\', GETDATE(), {1});'
-                .format(content, foreignWorkerId))
-
-            ForeignWorker_cursor.execute(
-                'SELECT DeviceTag FROM [QLendDB].[dbo].[ForeignWorker] WHERE ID = {0}'
-                .format(foreignWorkerId))
-            deviceTag = str((ForeignWorker_cursor.fetchone())[0])
-
-            data = {
-                "title": "QLend",
-                "text": content,
-                "action": content,
-                "tags": deviceTag,
-                "silent": False
-            }
-
-            print('data', data)
-
-            res = requests.post(requestUrl, header, json=data)
-            print(res.status_code)
-
-            repaymentRecords = RepaymentRecord_cursor.fetchone()
-
-            conn.commit()
-
-        print()
-
-        # expire in 3 days
-        repaymentRecords = getRepaymentRecordsByDate(conn, 3)
+        repaymentRecords = getRepaymentRecordsByDate(conn, day)
         print('get repaymentRecords', repaymentRecords)
-        print('expire in 3 days:')
+        print('expire in %s days:' % day)
         for repaymentRecord in repaymentRecords:
+            print(type (repaymentRecord[0]))
             repaymentNumber = str(repaymentRecord[0])
             loanNumber = str(repaymentRecord[1])
             print('repaymentNumber: ' + repaymentNumber + 'loanNumber: ' +
                   loanNumber)
 
-            LoanRecord_cursor.execute(
-                'SELECT ID FROM [QLendDB].[dbo].[LoanRecord] WHERE LoanNumber = \'{0}\';'
-                .format(loanNumber))
-
             foreignWorkerId = getLoanRecordByLoanNumber(loanNumber)
             print('foreignWorkerId: ', foreignWorkerId)
 
-            content = buildNoticeContent(3)
+            content = buildNoticeContent(day)
 
             insertNotice(content, foreignWorkerId)
 
@@ -149,37 +92,7 @@ def start():
 
             res = requests.post(url=requestUrl, headers=header, json=data)
             print('response code: ', res.status_code)
-            print('response data: ', res.text)
 
-            conn.commit()
-
-        print()
-
-        # expire in 1 days
-        RepaymentRecord_cursor.execute(
-            'SELECT RepaymentNumber, LoanNumber FROM [QLendDB].[dbo].[RepaymentRecord] WHERE DATEDIFF(day, GETDATE(), RepaymentDate) = 1;'
-        )
-        repaymentRecords = RepaymentRecord_cursor.fetchone()
-        print('expire in 1 days:')
-        while repaymentRecords:
-            repaymentNumber = str(repaymentRecords[0])
-            loanNumber = str(repaymentRecords[1])
-            print('repaymentNumber: ' + repaymentNumber + 'loanNumber: ' +
-                  loanNumber)
-
-            LoanRecord_cursor.execute(
-                'SELECT ID FROM [QLendDB].[dbo].[LoanRecord] WHERE LoanNumber = \'{0}\';'
-                .format(loanNumber))
-            foreignWorkerId = str((LoanRecord_cursor.fetchone())[0])
-            print('foreignWorkerId: ' + foreignWorkerId)
-
-            repaymentRecords = RepaymentRecord_cursor.fetchone()
-
-            print('repaymentRecords', repaymentRecords)
-
-            Notice_cursor.execute(
-                'INSERT INTO [QLendDB].[dbo].[Notice] (Content, Status, Link, CreateTime, ForeignWorkerId) VALUES (\'Your repayment will expired in 1 days.\', 0, \'RepaymentDetailPage\', GETDATE(), {0});'
-                .format(foreignWorkerId))
             conn.commit()
 
         print("finish", str(datetime.now()))
