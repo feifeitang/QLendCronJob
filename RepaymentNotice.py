@@ -1,6 +1,7 @@
 import pymssql
 from datetime import datetime
 import requests
+import json
 
 conn = pymssql.connect(server='34.97.221.65',
                        port='11433',
@@ -52,11 +53,22 @@ def getDeviceTagByForeignWorkerId(id):
     return None
 
 
-def insertNotice(content, foreignWorkerId):
+def createLink(loanNumber):
+    data = {
+        "page": 'RepaymentDetailPage',
+        "id": loanNumber
+    }
+
+    link = json.dumps(data)
+
+    return link
+
+
+def insertNotice(content, link, foreignWorkerId):
     cursor = conn.cursor()
     cursor.execute(
-        'INSERT INTO [QLendDB].[dbo].[Notice] (Content, Status, Link, CreateTime, ForeignWorkerId) VALUES (\'{0}\', 0, \'RepaymentDetailPage\', GETDATE(), {1});'
-        .format(content, foreignWorkerId))
+        'INSERT INTO [QLendDB].[dbo].[Notice] (Content, Status, Link, CreateTime, ForeignWorkerId) VALUES (\'{0}\', 0, \'{1}\', GETDATE(), {2});'
+        .format(content, link, foreignWorkerId))
 
 def startByDay(day):
     try:
@@ -75,7 +87,9 @@ def startByDay(day):
 
             content = buildNoticeContent(day)
 
-            insertNotice(content, foreignWorkerId)
+            link = createLink(loanNumber)
+
+            insertNotice(content, link, foreignWorkerId)
 
             deviceTag = [getDeviceTagByForeignWorkerId(foreignWorkerId)]
 
