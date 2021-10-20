@@ -3,10 +3,10 @@ from datetime import datetime
 import requests
 import json
 
-conn = pymssql.connect(server='34.80.221.189',
+conn = pymssql.connect(server='35.229.185.4',
                        port='11433',
                        user='sa',
-                       password='MyC0m9l&xP@ssw0rd#@',
+                       password='MyC0m9l&xP@ssw0rd',
                        database='QLendDB')
 
 requestUrl = 'https://qlend-sandbox.azurewebsites.net/api/Notifications/requests'
