@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: qlend-cron-job
+spec:
+  schedule: "0 1 */1 * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: qlend-cron-job
+            image: busybox
+            imagePullPolicy: Always
+          restartPolicy: OnFailure
