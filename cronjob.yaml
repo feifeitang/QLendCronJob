@@ -1,4 +1,4 @@
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: qlend-cron-job
@@ -10,6 +10,8 @@ spec:
         spec:
           containers:
           - name: qlend-cron-job
-            image: busybox
-            imagePullPolicy: Always
+            # if version update, should change the image sha
+            image: gcr.io/qlend-329115/qlend-cron-job:691d5b0
+            apiVersion: batch/v1beta1
+: Always
           restartPolicy: OnFailure
