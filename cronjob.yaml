@@ -9,9 +9,8 @@ spec:
       template:
         spec:
           containers:
-          - name: qlend-cron-job
-            # if version update, should change the image sha
-            image: gcr.io/qlend-329115/qlend-cron-job:691d5b0
-            apiVersion: batch/v1beta1
-: Always
+            - name: qlend-cron-job
+              # if version update, should change the image sha
+              image: gcr.io/qlend-329115/qlend-cron-job:0a1155a
+              imagePullPolicy: Always
           restartPolicy: OnFailure
