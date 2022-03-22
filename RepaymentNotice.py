@@ -15,7 +15,7 @@ header = {'Content-Type': 'application/json'}
 
 
 def buildNoticeContent(date):
-    return 'Your repayment will expired in %s days.' % date
+    return 'Khoản nợ phải thanh toán của bạn sẽ đến hạn trong %s ngày.' % date
 
 
 def getRepaymentRecordsByDate(conn, date):
