@@ -14,9 +14,11 @@ requestUrl = 'https://sandbox-app-api.qlend.tw/api/Notifications/requests'
 header = {'Content-Type': 'application/json'}
 
 
-def buildNoticeContent(date):
+def buildVietnamContent(date):
     return 'Khoản nợ phải thanh toán của bạn sẽ đến hạn trong %s ngày.' % date
 
+def buildEnglishContent(date):
+    return 'Your repayment will expired in %s days.' % date
 
 def getRepaymentRecordsByDate(conn, date):
     cursor = conn.cursor()
@@ -35,6 +37,18 @@ def getLoanRecordByLoanNumber(loanNumber):
     cursor.execute(
         'SELECT ID FROM [QLendDB].[dbo].[LoanRecord] WHERE LoanNumber = %s;',
         loanNumber)
+
+    if cursor != None:
+        return cursor.fetchone()[0]
+
+    return None
+
+
+def getNationalityById(id):
+    cursor = conn.cursor()
+    cursor.execute(
+        'SELECT Nationality FROM [QLendDB].[dbo].[ForeignWorker] WHERE ID = %s;',
+        id)
 
     if cursor != None:
         return cursor.fetchone()[0]
@@ -86,18 +100,23 @@ def startByDay(day):
 
             print('foreignWorkerId: {0}\nrepaymentNumber: {1}\nloanNumber: {2}'.format(foreignWorkerId, repaymentNumber, loanNumber))
 
-            content = buildNoticeContent(day)
+            if(getNationalityById(foreignWorkerId) == 'Vietnam'):
+                noticeContent = buildVietnamContent(day)
+            else:
+                noticeContent = buildEnglishContent(day)
+            
+            dbContent = buildEnglishContent(day)
 
             link = createLink(loanNumber)
 
-            insertNotice(content, link, foreignWorkerId)
+            insertNotice(dbContent, link, foreignWorkerId)
 
             deviceTag = [getDeviceTagByForeignWorkerId(foreignWorkerId)]
 
             data = {
                 "title": "QLend",
-                "text": content,
-                "action": content,
+                "text": noticeContent,
+                "action": noticeContent,
                 "tags": deviceTag,
                 "silent": False
             }
