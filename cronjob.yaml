@@ -11,6 +11,6 @@ spec:
           containers:
             - name: qlend-cron-job
               # if version update, should change the image sha
-              image: gcr.io/qlend-329115/qlend-cron-job:d9fd08a
+              image: gcr.io/qlend-329115/qlend-cron-job:7b9bbec
               imagePullPolicy: Always
           restartPolicy: OnFailure

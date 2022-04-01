@@ -100,10 +100,14 @@ def startByDay(day):
 
             print('foreignWorkerId: {0}\nrepaymentNumber: {1}\nloanNumber: {2}'.format(foreignWorkerId, repaymentNumber, loanNumber))
 
-            if(getNationalityById(foreignWorkerId) == 'Vietnam'):
+            nationality = getNationalityById(foreignWorkerId)
+            
+
+            noticeContent = buildEnglishContent(day)
+            
+
+            if(nationality.strip() == 'Vietnam'):
                 noticeContent = buildVietnamContent(day)
-            else:
-                noticeContent = buildEnglishContent(day)
             
             dbContent = buildEnglishContent(day)
 
